@@ -32,7 +32,8 @@ class AcGameMenu {
   add_listening_events() {
     let outer = this;
     this.$single_mode.click(function () {
-      console.log("click single mode");
+      outer.hide();
+      outer.root.playground.show();
     });
     this.$multi_mode.click(function () {
       console.log("click multi mode");
@@ -48,12 +49,5 @@ class AcGameMenu {
 
   hide() {
     this.$menu.hide();
-  }
-}
-class AcGame {
-  constructor(id) {
-    this.id = id;
-    this.$ac_game = $("#" + id);
-    this.menu = new AcGameMenu(this);
   }
 }
