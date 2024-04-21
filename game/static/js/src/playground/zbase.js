@@ -1,7 +1,7 @@
 class AcGamePlayground {
   constructor(root) {
     this.root = root;
-    this.$playground = $(`<div>游戏界面</div>`);
+    this.$playground = $(`<div class="ac-game-playground"></div>`);
 
     //this.hide();
     this.root.$ac_game.append(this.$playground);
@@ -13,14 +13,27 @@ class AcGamePlayground {
     this.players.push(
       new Player(
         this,
+        this.width / 2, // x coordinate
+        this.height / 2, // y coordinate
+        this.height * 0.05, // radius
+        "white", // color
+        this.height * 0.15, // speed
+        true // is_me
+      )
+    );
+
+    // add enemy
+    for (let i = 0; i < 5; i++) {
+      new Player(
+        this,
         this.width / 2,
         this.height / 2,
         this.height * 0.05,
-        "white",
+        "blue",
         this.height * 0.15,
-        true
-      )
-    );
+        false
+      );
+    }
 
     this.start();
   }

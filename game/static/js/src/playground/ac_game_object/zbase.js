@@ -15,11 +15,11 @@ class AcGameObject {
   update() {}
 
   // only run after destroy
-  on_destory() {}
+  on_destroy() {}
 
   // delete this object
   destroy() {
-    this.on_destory();
+    this.on_destroy();
 
     for (let i = 0; i < AC_GAME_OBJECTS.length; i++) {
       if (AC_GAME_OBJECTS[i] === this) {
