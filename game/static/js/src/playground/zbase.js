@@ -17,25 +17,32 @@ class AcGamePlayground {
         this.height / 2, // y coordinate
         this.height * 0.05, // radius
         "white", // color
-        this.height * 0.15, // speed
+        this.height * 0.3, // speed
         true // is_me
       )
     );
 
     // add enemy
     for (let i = 0; i < 5; i++) {
-      new Player(
-        this,
-        this.width / 2,
-        this.height / 2,
-        this.height * 0.05,
-        "blue",
-        this.height * 0.15,
-        false
+      this.players.push(
+        new Player(
+          this,
+          this.width / 2,
+          this.height / 2,
+          this.height * 0.05,
+          this.get_random_color(),
+          this.height * 0.1,
+          false
+        )
       );
     }
 
     this.start();
+  }
+
+  get_random_color() {
+    let colors = ["blue", "red", "green", "yellow", "pink", "purple"];
+    return colors[Math.floor(Math.random() * 6)];
   }
 
   start() {}
