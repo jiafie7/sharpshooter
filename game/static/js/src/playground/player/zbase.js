@@ -17,6 +17,7 @@ class Player extends AcGameObject {
     this.is_me = is_me;
     this.eps = 0.1;
     this.friction = 0.9;
+    this.spent_time = 0;
 
     this.cur_skill = null;
   }
@@ -39,7 +40,7 @@ class Player extends AcGameObject {
     this.playground.game_map.$canvas.mousedown(function (e) {
       if (e.which === 3) {
         outer.move_to(e.clientX, e.clientY);
-      } else if (e.which === 1) {
+      } else if (e.which === 1 && outer.is_me) {
         if (outer.cur_skill === "fireball") {
           outer.shoot_fireball(e.clientX, e.clientY);
         }
@@ -94,15 +95,6 @@ class Player extends AcGameObject {
   }
 
   is_attacked(angle, damage) {
-    this.radius -= damage;
-    if (this.radius < 5) {
-      this.destroy();
-      return false;
-    }
-    this.damage_x = Math.cos(angle);
-    this.damage_y = Math.sin(angle);
-    this.damage_speed = damage * 100;
-
     for (let i = 0; i < 20 + Math.random() * 5; i++) {
       let x = this.x,
         y = this.y;
@@ -125,9 +117,36 @@ class Player extends AcGameObject {
         move_length
       );
     }
+
+    this.radius -= damage;
+    if (this.radius < 5) {
+      this.destroy();
+      // avoid myself die to still attack
+      this.is_me = false;
+      return false;
+    }
+    this.damage_x = Math.cos(angle);
+    this.damage_y = Math.sin(angle);
+    this.damage_speed = damage * 100;
   }
 
   update() {
+    this.spent_time += this.timedelta / 1000;
+    // AI attack
+    if (!this.is_me && this.spent_time > 4 && Math.random() < 1 / 300.0) {
+      let player =
+        this.playground.players[
+          Math.floor(Math.random() * this.playground.players.length)
+        ];
+      // attack for predict position
+      let tx =
+        player.x + ((player.speed * this.vx * this.timedelta) / 1000) * 0.3;
+      let ty =
+        player.y + ((player.speed * this.vy * this.timedelta) / 1000) * 0.3;
+      this.shoot_fireball(tx, ty);
+    }
+
+    // attck back effect
     if (this.damage_speed > 10) {
       this.vx = this.vy = 0;
       this.move_length = 0;
@@ -138,6 +157,7 @@ class Player extends AcGameObject {
       if (this.move_length < this.eps) {
         this.move_length = 0;
         this.vx = this.vy = 0;
+        // generate new move for AI
         if (!this.is_me) {
           let tx = Math.random() * this.playground.width;
           let ty = Math.random() * this.playground.height;
@@ -161,5 +181,13 @@ class Player extends AcGameObject {
     this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
     this.ctx.fillStyle = this.color;
     this.ctx.fill();
+  }
+
+  on_destroy() {
+    for (let i = 0; i < this.playground.players.length; i++) {
+      if (this.playground.players[i] === this) {
+        this.playground.players.splice(i, 1);
+      }
+    }
   }
 }
