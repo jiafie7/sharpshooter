@@ -207,14 +207,14 @@ class Player extends AcGameObject {
       return false;
     });
     this.playground.game_map.$canvas.mousedown(function (e) {
-      //const rect = outer.ctx.canvas.getBoundingClientRect(); // for acapp
+      const rect = outer.ctx.canvas.getBoundingClientRect(); // for acapp
       //console.log(rect.left);
       if (e.which === 3) {
-        //outer.move_to(e.clientX - rect.left, e.clientY - rect.top); // for acapp
+        outer.move_to(e.clientX - rect.left, e.clientY - rect.top); // for acapp
         outer.move_to(e.clientX, e.clientY);
       } else if (e.which === 1 && outer.is_me) {
         if (outer.cur_skill === "fireball") {
-          //outer.shoot_fireball(e.clientX - rect.let, e.clientY - rect.top); // for acapp
+          outer.shoot_fireball(e.clientX - rect.let, e.clientY - rect.top); // for acapp
           outer.shoot_fireball(e.clientX, e.clientY);
         }
         outer.cur_skill = null;
