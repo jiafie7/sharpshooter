@@ -17,6 +17,7 @@ class AcGameMenu {
 				</div>
 		</div>
 </div>`);
+    this.$menu.hide();
     this.root.$ac_game.append(this.$menu);
     this.$single_mode = this.$menu.find(".ac-game-menu-field-item-single-mode");
     this.$multi_mode = this.$menu.find(".ac-game-menu-field-item-multi-mode");
@@ -189,6 +190,11 @@ class Player extends AcGameObject {
     this.spent_time = 0;
 
     this.cur_skill = null;
+
+    if (this.is_me) {
+      this.img = new Image();
+      this.img.src = this.playground.root.settings.photo;
+    }
   }
 
   start() {
@@ -350,10 +356,26 @@ class Player extends AcGameObject {
   }
 
   render() {
-    this.ctx.beginPath();
-    this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-    this.ctx.fillStyle = this.color;
-    this.ctx.fill();
+    if (this.is_me) {
+      this.ctx.save();
+      this.ctx.beginPath();
+      this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+      this.ctx.stroke();
+      this.ctx.clip();
+      this.ctx.drawImage(
+        this.img,
+        this.x - this.radius,
+        this.y - this.radius,
+        this.radius * 2,
+        this.radius * 2
+      );
+      this.ctx.restore();
+    } else {
+      this.ctx.beginPath();
+      this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+      this.ctx.fillStyle = this.color;
+      this.ctx.fill();
+    }
   }
 
   on_destroy() {
@@ -505,10 +527,96 @@ class AcGamePlayground {
     this.$playground.hide();
   }
 }
+class Settings {
+  constructor(root) {
+    this.root = root;
+    this.platform = "WEB";
+    if (this.root.AcOS) this.platform = "ACAPP";
+
+    this.username = "";
+    this.photo = "";
+
+    this.$settings = $(`
+<div class="ac-game-settings">
+  <div class="ac-game-settings-login">
+    <div class="ac-game-settings-title">
+      Login
+    </div>
+    <div class="ac-game-settings-username">
+      <div class="ac-game-settings-item">
+        <input type="text" placeholder="Username">
+      </div>
+    </div>
+  </div>
+  <div class="ac-game-settings-register">
+  </div>
+</div>
+`);
+    this.$login = this.$settings.find(".ac-game-settings-login");
+    this.$login.hide();
+
+    this.$register = this.$settings.find(".ac-game-settings-register");
+    this.$register.hide();
+
+    this.root.$ac_game.append(this.$settings);
+
+    this.start();
+  }
+
+  start() {
+    this.getinfo();
+  }
+
+  // open register page
+  register() {
+    this.$login.hide();
+    this.$register.show();
+  }
+
+  // open login page
+  login() {
+    this.$register.hide();
+    this.$login.show();
+  }
+
+  getinfo() {
+    let outer = this;
+
+    $.ajax({
+      url: "http://127.0.0.1:8000/settings/getinfo/",
+      type: "GET",
+      data: {
+        platform: outer.platform,
+      },
+      success: function (resp) {
+        console.log(resp);
+        if (resp.result === "success") {
+          outer.username = resp.username;
+          outer.photo = resp.photo;
+          outer.hide();
+          outer.root.menu.show();
+        } else {
+          outer.login();
+        }
+      },
+    });
+  }
+
+  hide() {
+    this.$settings.hide();
+  }
+
+  show() {
+    this.$settings.show();
+  }
+}
 export class AcGame {
-  constructor(id) {
+  constructor(id, AcOS) {
     this.id = id;
     this.$ac_game = $("#" + id);
+    this.AcOS = AcOS;
+
+    this.settings = new Settings(this);
     this.menu = new AcGameMenu(this);
     this.playground = new AcGamePlayground(this);
 
