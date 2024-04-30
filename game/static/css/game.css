@@ -14,8 +14,8 @@ body {
 }
 
 .ac-game-settings-login {
-  height: 41vh;
-  width: 20vw;
+  height: 46vh;
+  width: 30vw;
   position: relative;
   top: 50%;
   left: 50%;
@@ -27,7 +27,8 @@ body {
 .ac-game-settings-title {
   font-family: sans-serif;
   color: white;
-  font-size: 5vh;
+  font-size: 4.5vh;
+  font-weight: bolder;
   text-align: center;
   height: 7vh;
   padding-top: 2vh;
@@ -39,23 +40,102 @@ body {
   height: 7vh;
 }
 
+.ac-game-settings-password {
+  display: block;
+  height: 7vh;
+}
+
+.ac-game-settings-submit {
+  display: block;
+  height: 7vh;
+}
+
+.ac-game-settings-tool {
+  display: block;
+  height: 5vh;
+}
+
 .ac-game-settings-item {
   width: 100%;
   height: 100%;
 }
 
 .ac-game-settings-item > input {
-  line-height: 3vh;
-  width: 90%;
+  line-height: 4vh;
+  width: 70%;
   position: relative;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
 
+.ac-game-settings-item > button {
+  color: black;
+  font-size: 3vh;
+  font-family: sans-serif;
+  font-weight: bold;
+  line-height: 4vh;
+  width: 70%;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #4caf50;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.ac-game-settings-error-message {
+  color: red;
+  font-size: 2.5vh;
+  font-family: sans-serif;
+  display: inline;
+  float: left;
+  padding-left: 1vw;
+}
+
+.ac-game-settings-option {
+  color: white;
+  font-size: 3vh;
+  font-family: sans-serif;
+  display: inline;
+  float: right;
+  padding-right: 1vw;
+  cursor: pointer;
+}
+
+.ac-game-settings-github {
+  display: flex;
+  justify-content: center; /* 在父元素中水平居中 */
+  align-items: center; /* 在父元素中垂直居中 */
+}
+
+.ac-game-settings-third-party {
+  display: inline-block;
+}
+
+.ac-game-settings-login-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.ac-game-settings-login-link > img {
+  width: 5vh; /* Adjust icon size as needed */
+  margin-right: 10px; /* Adjust margin between icon and text */
+  border-radius: 50%;
+}
+
+.ac-game-settings-login-link > span {
+  font-size: 3vh; /* Adjust font size as needed */
+  color: white;
+  font-family: sans-serif;
+}
+
 .ac-game-settings-register {
-  height: 46vh;
-  width: 20vw;
+  height: 52vh;
+  width: 30vw;
   position: relative;
   top: 50%;
   left: 50%;
