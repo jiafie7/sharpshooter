@@ -141,6 +141,9 @@ class Settings {
     this.$login_register.click(function () {
       outer.register();
     });
+    this.$login_submit.click(function () {
+      outer.login_on_remote();
+    });
   }
 
   add_listening_events_register() {
@@ -148,6 +151,76 @@ class Settings {
 
     this.$register_login.click(function () {
       outer.login();
+    });
+    this.$register_submit.click(function () {
+      outer.register_on_remote();
+    });
+  }
+
+  // log in to server
+  login_on_remote() {
+    let outer = this;
+    let username = this.$login_username.val();
+    let password = this.$login_password.val();
+    this.$login_error_message.empty();
+
+    $.ajax({
+      url: "http://127.0.0.1:8000/settings/login/",
+      type: "GET",
+      data: {
+        username: username,
+        password: password,
+      },
+      success: function (resp) {
+        console.log(resp);
+        if (resp.result === "success") {
+          location.reload();
+        } else {
+          outer.$login_error_message.html(resp.result);
+        }
+      },
+    });
+  }
+
+  // register to server
+  register_on_remote() {
+    let outer = this;
+
+    let username = this.$register_username.val();
+    let password = this.$register_password.val();
+    let password_confirm = this.$register_password_confirm.val();
+    this.$register_error_message.empty();
+
+    $.ajax({
+      url: "http://127.0.0.1:8000/settings/register/",
+      type: "GET",
+      data: {
+        username: username,
+        password: password,
+        password_confirm: password_confirm,
+      },
+      success: function (resp) {
+        if (resp.result === "success") {
+          location.reload();
+        } else {
+          outer.$register_error_message.html(resp.result);
+        }
+      },
+    });
+  }
+
+  // log out from server
+  logout_on_remote() {
+    if (this.platform === "ACAPP") return false;
+
+    $.ajax({
+      url: "http://127.0.0.1:8000/settings/logout/",
+      type: "GET",
+      success: function (resp) {
+        if (resp.result === "success") {
+          location.reload();
+        }
+      },
     });
   }
 

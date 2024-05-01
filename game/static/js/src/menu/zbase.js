@@ -13,7 +13,7 @@ class AcGameMenu {
 				</div>
 				<br>
 				<div class="ac-game-menu-field-item ac-game-menu-field-item-settings">
-						设置
+						Log Out
 				</div>
 		</div>
 </div>`);
@@ -40,7 +40,7 @@ class AcGameMenu {
       console.log("click multi mode");
     });
     this.$settings.click(function () {
-      console.log("click settings");
+      outer.root.settings.logout_on_remote();
     });
   }
 
