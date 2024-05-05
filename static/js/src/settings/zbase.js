@@ -94,7 +94,7 @@ class Settings {
     this.$login_password = this.$login.find(".ac-game-settings-password input");
     this.$login_submit = this.$login.find(".ac-game-settings-submit button");
     this.$login_error_message = this.$login.find(
-      ".ac-game-settings-error-message"
+      ".ac-game-settings-error-message",
     );
     this.$login_register = this.$login.find(".ac-game-settings-option");
 
@@ -102,19 +102,19 @@ class Settings {
 
     this.$register = this.$settings.find(".ac-game-settings-register");
     this.$register_username = this.$register.find(
-      ".ac-game-settings-username input"
+      ".ac-game-settings-username input",
     );
     this.$register_password = this.$register.find(
-      ".ac-game-settings-password-first input"
+      ".ac-game-settings-password-first input",
     );
     this.$register_password_confirm = this.$register.find(
-      ".ac-game-settings-password-second input"
+      ".ac-game-settings-password-second input",
     );
     this.$register_submit = this.$register.find(
-      ".ac-game-settings-submit button"
+      ".ac-game-settings-submit button",
     );
     this.$register_error_message = this.$register.find(
-      ".ac-game-settings-error-message"
+      ".ac-game-settings-error-message",
     );
     this.$register_login = this.$register.find(".ac-game-settings-option");
 
@@ -128,8 +128,12 @@ class Settings {
   }
 
   start() {
-    this.getinfo();
-    this.add_listening_events();
+    if (this.platform === "ACAPP") {
+      this.getinfo_acapp(); // acapp
+    } else {
+      this.getinfo_web();
+      this.add_listening_events();
+    }
   }
 
   add_listening_events() {
@@ -255,7 +259,45 @@ class Settings {
     this.$login.show();
   }
 
-  getinfo() {
+  acapp_login(appid, redirect_uri, scope, state) {
+    let outer = this;
+
+    this.root.AcOS.api.oauth2.authorize(
+      appid,
+      redirect_uri,
+      scope,
+      state,
+      function (resp) {
+        if (resp.result === "success") {
+          (outer.username = resp.username),
+            (outer.photo = resp.photo),
+            outer.hide();
+          outer.root.menu.show();
+        }
+      },
+    );
+  }
+
+  getinfo_acapp() {
+    let outer = this;
+
+    $.ajax({
+      url: "https://app6791.acapp.acwing.com.cn/settings/acwing/acapp/apply_code/",
+      type: "GET",
+      success: function (resp) {
+        if (resp.result === "success") {
+          outer.acapp_login(
+            resp.appid,
+            resp.redirect_uri,
+            resp.scope,
+            resp.state,
+          );
+        }
+      },
+    });
+  }
+
+  getinfo_web() {
     let outer = this;
 
     $.ajax({
