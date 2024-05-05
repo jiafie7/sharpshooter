@@ -4,6 +4,7 @@ class AcGamePlayground {
     this.$playground = $(`<div class="ac-game-playground"></div>`);
 
     this.hide();
+    this.root.$ac_game.append(this.$playground);
 
     this.start();
   }
@@ -13,11 +14,28 @@ class AcGamePlayground {
     return colors[Math.floor(Math.random() * 6)];
   }
 
-  start() {}
+  start() {
+    let outer = this;
+    $(window).resize(function () {
+      outer.resize();
+    });
+  }
+
+  resize() {
+    console.log("resize");
+
+    this.width = this.$playground.width();
+    this.height = this.$playground.height();
+    let unit = Math.min(this.width / 16, this.height / 9);
+    this.width = unit * 16;
+    this.height = unit * 9;
+    this.scale = this.height;
+  }
 
   show() {
     this.$playground.show();
-    this.root.$ac_game.append(this.$playground);
+
+    this.resize();
 
     this.width = this.$playground.width();
     this.height = this.$playground.height();
@@ -31,8 +49,8 @@ class AcGamePlayground {
         this.height * 0.05, // radius
         "white", // color
         this.height * 0.3, // speed
-        true // is_me
-      )
+        true, // is_me
+      ),
     );
 
     // add enemy
@@ -45,8 +63,8 @@ class AcGamePlayground {
           this.height * 0.05,
           this.get_random_color(),
           this.height * 0.1,
-          false
-        )
+          false,
+        ),
       );
     }
   }
