@@ -129,7 +129,7 @@ class Settings {
 
   start() {
     if (this.platform === "ACAPP") {
-      this.getinfo_acapp(); // acapp
+      this.getinfo_acapp();
     } else {
       this.getinfo_web();
       this.add_listening_events();
@@ -282,7 +282,7 @@ class Settings {
     let outer = this;
 
     $.ajax({
-      url: "https://app6791.acapp.acwing.com.cn/settings/acwing/acapp/apply_code/",
+      url: "http://127.0.0.1:8000/settings/acwing/acapp/apply_code/",
       type: "GET",
       success: function (resp) {
         if (resp.result === "success") {
