@@ -22,14 +22,13 @@ class AcGamePlayground {
   }
 
   resize() {
-    console.log("resize");
-
     this.width = this.$playground.width();
     this.height = this.$playground.height();
     let unit = Math.min(this.width / 16, this.height / 9);
     this.width = unit * 16;
     this.height = unit * 9;
     this.scale = this.height;
+    if (this.game_map) this.game_map.resize();
   }
 
   show() {
@@ -44,11 +43,11 @@ class AcGamePlayground {
     this.players.push(
       new Player(
         this,
-        this.width / 2, // x coordinate
-        this.height / 2, // y coordinate
-        this.height * 0.05, // radius
+        this.width / 2 / this.scale, // x coordinate
+        0.5, // y coordinate
+        0.05, // radius
         "white", // color
-        this.height * 0.3, // speed
+        0.2, // speed
         true, // is_me
       ),
     );
@@ -58,11 +57,11 @@ class AcGamePlayground {
       this.players.push(
         new Player(
           this,
-          this.width / 2,
-          this.height / 2,
-          this.height * 0.05,
+          this.width / 2 / this.scale,
+          0.5,
+          0.05,
           this.get_random_color(),
-          this.height * 0.1,
+          0.2,
           false,
         ),
       );
