@@ -1,5 +1,15 @@
 class Player extends AcGameObject {
-  constructor(playground, x, y, radius, color, speed, is_me) {
+  constructor(
+    playground,
+    x,
+    y,
+    radius,
+    color,
+    speed,
+    character,
+    username,
+    photo,
+  ) {
     super();
     this.playground = playground;
     this.ctx = this.playground.game_map.ctx;
@@ -14,21 +24,23 @@ class Player extends AcGameObject {
     this.radius = radius;
     this.color = color;
     this.speed = speed;
-    this.is_me = is_me;
+    this.character = character;
+    this.username = username;
+    this.photo = photo;
     this.eps = 0.01;
     this.friction = 0.9;
     this.spent_time = 0;
 
     this.cur_skill = null;
 
-    if (this.is_me) {
+    if (this.character !== "robot") {
       this.img = new Image();
-      this.img.src = this.playground.root.settings.photo;
+      this.img.src = this.photo;
     }
   }
 
   start() {
-    if (this.is_me) {
+    if (this.character == "me") {
       this.add_listening_events();
     } else {
       let tx = (Math.random() * this.playground.width) / this.playground.scale;
@@ -54,7 +66,7 @@ class Player extends AcGameObject {
         //  e.clientX / outer.playground.scale,
         //  e.clientY / outer.playground.scale,
         //);
-      } else if (e.which === 1 && outer.is_me) {
+      } else if (e.which === 1) {
         if (outer.cur_skill === "fireball") {
           outer.shoot_fireball(
             (e.clientX - rect.left) / outer.playground.scale,
@@ -143,7 +155,7 @@ class Player extends AcGameObject {
     if (this.radius < this.eps) {
       this.destroy();
       // avoid myself die to still attack
-      this.is_me = false;
+      //this.is_me = false;
       return false;
     }
     this.damage_x = Math.cos(angle);
@@ -159,7 +171,11 @@ class Player extends AcGameObject {
   update_move() {
     this.spent_time += this.timedelta / 1000;
     // AI attack
-    if (!this.is_me && this.spent_time > 4 && Math.random() < 1 / 300.0) {
+    if (
+      this.character === "robot" &&
+      this.spent_time > 4 &&
+      Math.random() < 1 / 300.0
+    ) {
       let player =
         this.playground.players[
           Math.floor(Math.random() * this.playground.players.length)
@@ -184,7 +200,7 @@ class Player extends AcGameObject {
         this.move_length = 0;
         this.vx = this.vy = 0;
         // generate new move for AI
-        if (!this.is_me) {
+        if (this.character === "robot") {
           let tx =
             (Math.random() * this.playground.width) / this.playground.scale;
           let ty =
@@ -205,7 +221,7 @@ class Player extends AcGameObject {
 
   render() {
     let scale = this.playground.scale;
-    if (this.is_me) {
+    if (this.character !== "robot") {
       this.ctx.save();
       this.ctx.beginPath();
       this.ctx.arc(

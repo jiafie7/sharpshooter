@@ -31,7 +31,7 @@ class AcGamePlayground {
     if (this.game_map) this.game_map.resize();
   }
 
-  show() {
+  show(mode) {
     this.$playground.show();
 
     this.resize();
@@ -48,23 +48,28 @@ class AcGamePlayground {
         0.05, // radius
         "white", // color
         0.2, // speed
-        true, // is_me
+        "me", // is_me
+        this.root.settings.username,
+        this.root.settings.photo,
       ),
     );
 
-    // add enemy
-    for (let i = 0; i < 5; i++) {
-      this.players.push(
-        new Player(
-          this,
-          this.width / 2 / this.scale,
-          0.5,
-          0.05,
-          this.get_random_color(),
-          0.2,
-          false,
-        ),
-      );
+    if (mode === "single mode") {
+      // add enemy
+      for (let i = 0; i < 5; i++) {
+        this.players.push(
+          new Player(
+            this,
+            this.width / 2 / this.scale,
+            0.5,
+            0.05,
+            this.get_random_color(),
+            0.2,
+            "robot",
+          ),
+        );
+      }
+    } else if (mode === "multi mode") {
     }
   }
 
