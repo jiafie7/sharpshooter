@@ -543,6 +543,17 @@ class FireBall extends AcGameObject {
     this.ctx.fill();
   }
 }
+class MultiPlayerSocket {
+  constructor(playground) {
+    this.playground = playground;
+
+    this.ws = new WebSocket("ws://127.0.0.1:8000/wss/multiplayer/");
+
+    this.start();
+  }
+
+  start() {}
+}
 class AcGamePlayground {
   constructor(root) {
     this.root = root;
@@ -579,11 +590,12 @@ class AcGamePlayground {
   show(mode) {
     this.$playground.show();
 
-    this.resize();
-
     this.width = this.$playground.width();
     this.height = this.$playground.height();
     this.game_map = new GameMap(this);
+
+    this.resize();
+
     this.players = [];
     this.players.push(
       new Player(
@@ -615,6 +627,7 @@ class AcGamePlayground {
         );
       }
     } else if (mode === "multi mode") {
+      this.mps = new MultiPlayerSocket(this);
     }
   }
 
