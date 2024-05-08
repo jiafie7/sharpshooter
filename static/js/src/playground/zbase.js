@@ -32,6 +32,7 @@ class AcGamePlayground {
   }
 
   show(mode) {
+    let outer = this;
     this.$playground.show();
 
     this.width = this.$playground.width();
@@ -72,6 +73,10 @@ class AcGamePlayground {
       }
     } else if (mode === "multi mode") {
       this.mps = new MultiPlayerSocket(this);
+
+      this.mps.ws.onopen = function () {
+        outer.mps.send_create_player();
+      };
     }
   }
 

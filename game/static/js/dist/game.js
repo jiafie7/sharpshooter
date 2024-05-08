@@ -61,6 +61,18 @@ class AcGameObject {
 
     this.has_called_start = false;
     this.timedelta = 0;
+
+    this.uuid = this.create_uuid();
+    console.log(this.uuid);
+  }
+
+  create_uuid() {
+    let res = "";
+    for (let i = 0; i < 8; i++) {
+      let x = parseInt(Math.floor(Math.random() * 10));
+      res += x;
+    }
+    return res;
   }
 
   // only run in the first frame
@@ -553,6 +565,14 @@ class MultiPlayerSocket {
   }
 
   start() {}
+
+  send_create_player() {
+    this.ws.send(
+      JSON.stringify({
+        message: "hello acapp server",
+      }),
+    );
+  }
 }
 class AcGamePlayground {
   constructor(root) {
@@ -588,6 +608,7 @@ class AcGamePlayground {
   }
 
   show(mode) {
+    let outer = this;
     this.$playground.show();
 
     this.width = this.$playground.width();
@@ -628,6 +649,10 @@ class AcGamePlayground {
       }
     } else if (mode === "multi mode") {
       this.mps = new MultiPlayerSocket(this);
+
+      this.mps.ws.onopen = function () {
+        outer.mps.send_create_player();
+      };
     }
   }
 
