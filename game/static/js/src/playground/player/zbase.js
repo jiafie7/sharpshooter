@@ -58,14 +58,16 @@ class Player extends AcGameObject {
       const rect = outer.ctx.canvas.getBoundingClientRect(); // for acapp
       //console.log(rect.left);
       if (e.which === 3) {
-        outer.move_to(
-          (e.clientX - rect.left) / outer.playground.scale,
-          (e.clientY - rect.top) / outer.playground.scale,
-        ); // for acapp
+        let tx = (e.clientX - rect.left) / outer.playground.scale;
+        let ty = (e.clientY - rect.top) / outer.playground.scale;
+        outer.move_to(tx, ty); // for acapp
         //outer.move_to(
         //  e.clientX / outer.playground.scale,
         //  e.clientY / outer.playground.scale,
         //);
+        if (outer.playground.mode === "multi mode") {
+          outer.playground.mps.send_move_to(tx, ty);
+        }
       } else if (e.which === 1) {
         if (outer.cur_skill === "fireball") {
           outer.shoot_fireball(
