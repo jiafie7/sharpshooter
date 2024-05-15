@@ -30,6 +30,7 @@ class Player extends AcGameObject {
     this.eps = 0.01;
     this.friction = 0.9;
     this.spent_time = 0;
+    this.fireballs = [];
 
     this.cur_skill = null;
 
@@ -37,9 +38,23 @@ class Player extends AcGameObject {
       this.img = new Image();
       this.img.src = this.photo;
     }
+
+    if (this.character === "me") {
+      this.fireball_coldtime = 3;
+    }
   }
 
   start() {
+    this.playground.player_count++;
+    this.playground.notice_board.write(
+      "Ready players: " + this.playground.player_count,
+    );
+
+    if (this.playground.player_count >= 3) {
+      this.playground.state = "fighting";
+      this.playground.notice_board.write("Fighting");
+    }
+
     if (this.character === "me") {
       this.add_listening_events();
     } else if (this.character === "robot") {
@@ -55,23 +70,32 @@ class Player extends AcGameObject {
       return false;
     });
     this.playground.game_map.$canvas.mousedown(function (e) {
+      if (outer.playground.state !== "fighting") return false;
+
       const rect = outer.ctx.canvas.getBoundingClientRect(); // for acapp
       //console.log(rect.left);
       if (e.which === 3) {
-        outer.move_to(
-          (e.clientX - rect.left) / outer.playground.scale,
-          (e.clientY - rect.top) / outer.playground.scale,
-        ); // for acapp
+        let tx = (e.clientX - rect.left) / outer.playground.scale;
+        let ty = (e.clientY - rect.top) / outer.playground.scale;
+        outer.move_to(tx, ty); // for acapp
         //outer.move_to(
         //  e.clientX / outer.playground.scale,
         //  e.clientY / outer.playground.scale,
         //);
+        if (outer.playground.mode === "multi mode") {
+          outer.playground.mps.send_move_to(tx, ty);
+        }
       } else if (e.which === 1) {
+        if (outer.fireball_coldtime > outer.eps) return false;
+
+        let tx = (e.clientX - rect.left) / outer.playground.scale;
+        let ty = (e.clientY - rect.top) / outer.playground.scale;
+
         if (outer.cur_skill === "fireball") {
-          outer.shoot_fireball(
-            (e.clientX - rect.left) / outer.playground.scale,
-            (e.clientY - rect.top) / outer.playground.scale,
-          ); // for acapp
+          let fireball = outer.shoot_fireball(tx, ty); // for acapp
+          if (outer.playground.mode === "multi mode") {
+            outer.playground.mps.send_shoot_fireball(tx, ty, fireball.uuid);
+          }
           //outer.shoot_fireball(
           //  e.clientX / outer.playground.scale,
           //  e.clientY / outer.playground.scale,
@@ -82,6 +106,10 @@ class Player extends AcGameObject {
     });
 
     $(window).keydown(function (e) {
+      if (outer.playground.state !== "fighting") return false;
+
+      if (outer.fireball_coldtime > outer.eps) return false;
+
       if (e.which === 81) {
         outer.cur_skill = "fireball";
         return false;
@@ -99,7 +127,7 @@ class Player extends AcGameObject {
     let color = "orange";
     let speed = 0.5;
     let move_length = 1;
-    new FireBall(
+    let fireball = new FireBall(
       this.playground,
       this,
       x,
@@ -112,6 +140,18 @@ class Player extends AcGameObject {
       move_length,
       0.005,
     );
+    this.fireballs.push(fireball);
+    return fireball;
+  }
+
+  destroy_fireball(uuid) {
+    for (let i = 0; i < this.fireballs.length; i++) {
+      let fireball = this.fireballs[i];
+      if (uuid === fireball.uuid) {
+        fireball.destroy();
+        break;
+      }
+    }
   }
 
   get_dist(x1, y1, x2, y2) {
@@ -163,9 +203,28 @@ class Player extends AcGameObject {
     this.damage_speed = damage * 100;
   }
 
+  receive_attack(x, y, angle, damage, ball_uuid, attacker) {
+    attacker.destroy_fireball(ball_uuid);
+    this.x = x;
+    this.y = y;
+    this.is_attacked(angle, damage);
+  }
+
   update() {
+    this.spent_time += this.timedelta / 1000;
+
+    if (this.character === "me" && this.playground.state === "fighting") {
+      this.update_coldtime();
+    }
     this.update_move();
     this.render();
+  }
+
+  update_coldtime() {
+    this.fireball_coldtime -= this.timedelta / 1000;
+    this.fireball_coldtime = Math.max(this.fireball_coldtime, 0);
+
+    console.log(this.fireball_coldtime);
   }
 
   update_move() {
@@ -261,6 +320,7 @@ class Player extends AcGameObject {
     for (let i = 0; i < this.playground.players.length; i++) {
       if (this.playground.players[i] === this) {
         this.playground.players.splice(i, 1);
+        break;
       }
     }
   }
