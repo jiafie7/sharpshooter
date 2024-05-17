@@ -153,22 +153,23 @@ body {
 }
 
 .ac-game-menu-field {
-  width: 20vw;
+  width: 24vw;
   position: relative;
-  top: 40vh;
-  left: 19vw;
+  top: 40%;
+  left: 20%;
 }
 
 .ac-game-menu-field-item {
   color: white;
-  width: 18vw;
-  font-size: 6vh;
+  height: 7vh;
+  width: 24vw;
+  font-size: 5vh;
   font-family: sans-serif;
   font-weight: bold;
-  padding: 2vh;
   text-align: center;
+  padding-top: 2vh;
   background-color: rgba(39, 21, 28, 0.6);
-  border-radius: 10px;
+  border-radius: 20px;
   letter-spacing: 0.5vw;
   cursor: pointer;
 }
