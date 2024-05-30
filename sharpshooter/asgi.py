@@ -9,12 +9,19 @@ https://docs.djangoproject.com/en/3.2/howto/deployment/asgi/
 
 import os
 
-from channels.auth import AuthMiddlewareStack
-from channels.routing import ProtocolTypeRouter, URLRouter
-from django.core.asgi import get_asgi_application
-from game.routing import websocket_urlpatterns
+import django
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "sharpshooter.settings")
+
+from channels.auth import AuthMiddlewareStack
+from channels.layers import get_channel_layer
+from channels.routing import ProtocolTypeRouter, URLRouter
+from django.core.asgi import get_asgi_application
+
+from game.routing import websocket_urlpatterns
+
+channel_layer = get_channel_layer()
+
 
 application = ProtocolTypeRouter(
     {
